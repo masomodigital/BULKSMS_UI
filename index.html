@@ -1,36 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Login</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f4f4;
       display: flex;
       justify-content: center;
-      padding-top: 40px;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      margin: 0;
     }
     .container {
       background-color: white;
-      padding: 30px 40px;
-      border-radius: 10px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       max-width: 400px;
       width: 100%;
     }
-    h2, h3, h4 { text-align: center; }
+    h2, h3, h4 {
+      text-align: center;
+      margin-top: 0;
+    }
+    h2 {
+      color: green;
+      font-weight: bold;
+    }
     label {
       font-weight: bold;
-      display: block;
       margin-top: 12px;
+      display: block;
     }
     input {
       width: 100%;
       padding: 10px;
       margin-top: 6px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 6px;
+      font-size: 15px;
     }
     button {
       background-color: #28a745;
@@ -38,44 +53,69 @@
       padding: 10px;
       margin-top: 15px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
       width: 100%;
+      font-size: 15px;
     }
-    button:hover { background-color: #218838; }
-    .hidden { display: none; }
+    button:hover {
+      background-color: #218838;
+    }
+    .hidden {
+      display: none;
+    }
     .contact-row {
       margin-bottom: 10px;
       padding: 8px;
       background-color: #f9f9f9;
       border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .contact-row button {
       background-color: red;
-      float: right;
+      color: white;
+      border: none;
+      border-radius: 4px;
       padding: 5px 10px;
       font-size: 12px;
+      cursor: pointer;
     }
     #addResult, #loginError {
       margin-top: 10px;
       text-align: center;
     }
-    #addResult { color: green; }
-    #loginError { color: red; }
+    #addResult {
+      color: green;
+    }
+    #loginError {
+      color: red;
+    }
     #contactsList {
       max-height: 300px;
       overflow-y: auto;
       margin-bottom: 15px;
       border: 1px solid #ccc;
       padding: 10px;
-      border-radius: 5px;
+      border-radius: 6px;
     }
-    .show-password-container { margin-top: 5px; }
+    .show-password-container {
+      margin-top: 5px;
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 20px;
+      }
+      input, button {
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2 style="color: green; font-weight: bold;">USER LOGIN</h2>
+    <h2>USER LOGIN</h2>
     <div id="loginDiv">
       <label>National ID:</label>
       <input type="text" id="nationalID" />
@@ -150,7 +190,10 @@
       contacts.forEach(contact => {
         const div = document.createElement("div");
         div.className = "contact-row";
-        div.innerHTML = `${contact.name} - ${contact.phone} <button onclick="deleteContact('${contact.phone}')">Delete</button>`;
+        div.innerHTML = `
+          <span>${contact.name} - ${contact.phone}</span>
+          <button onclick="deleteContact('${contact.phone}')">Delete</button>
+        `;
         listDiv.appendChild(div);
       });
 
