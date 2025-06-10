@@ -103,6 +103,21 @@
     .show-password-container {
       margin-top: 5px;
     }
+    /* Style for the forgotten password link */
+    .forgot-password-link {
+        text-align: center;
+        margin-top: 15px; /* Adds some space below the button */
+        font-size: 0.9em; /* Slightly smaller text */
+    }
+    .forgot-password-link a {
+        color: blue; /* Make the link text blue */
+        text-decoration: underline; /* Underline the link */
+        font-weight: bold; /* Make the link bold */
+    }
+    .forgot-password-link a:hover {
+        color: darkblue; /* Darken on hover */
+    }
+
     @media (max-width: 480px) {
       .container {
         padding: 25px 20px;
@@ -123,6 +138,7 @@
       <input type="password" id="userPassword" />
       <button onclick="login()">Login</button>
       <p id="loginError"></p>
+      <p class="forgot-password-link">Have forgotten password? <a href="https://masomodigital.github.io/bulksms-update-password/" target="_blank">CLICK HERE</a> to reset your password.</p>
     </div>
 
     <div id="dashboard" class="hidden">
@@ -157,7 +173,13 @@
     function login() {
       const nationalID = document.getElementById("nationalID").value.trim();
       const password = document.getElementById("userPassword").value.trim();
-      if (!nationalID || !password) return;
+      const loginError = document.getElementById("loginError"); // Ensure loginError is defined
+      loginError.innerText = ""; // Clear previous errors
+
+      if (!nationalID || !password) {
+        loginError.innerText = "Please enter both fields.";
+        return;
+      }
 
       fetch(SCRIPT_URL, {
         method: "POST",
@@ -166,7 +188,7 @@
       .then(res => res.json())
       .then(data => {
         if (data.error) {
-          document.getElementById("loginError").innerText = data.error;
+          loginError.innerText = data.error;
           return;
         }
 
@@ -180,12 +202,22 @@
         document.getElementById("userPasswordDisplay").value = data.password;
         document.getElementById("userPhone").innerText = data.phone;
         updateContactList(data.contacts);
+      })
+      .catch(error => {
+          loginError.innerText = "Error during login: " + error.message;
       });
     }
 
     function updateContactList(contacts) {
       const listDiv = document.getElementById("contactsList");
       listDiv.innerHTML = "";
+
+      // Ensure contacts is an array before trying to iterate
+      if (!Array.isArray(contacts)) {
+        console.error("Expected contacts to be an array, but got:", contacts);
+        document.getElementById("contactCount").innerText = 0;
+        return;
+      }
 
       contacts.forEach(contact => {
         const div = document.createElement("div");
@@ -203,7 +235,13 @@
     function addNewContact() {
       const name = document.getElementById("newContactName").value.trim();
       const phone = document.getElementById("newContactPhone").value.trim();
-      if (!name || !phone) return;
+      const addResult = document.getElementById("addResult"); // Get addResult element
+      addResult.innerText = ""; // Clear previous messages
+
+      if (!name || !phone) {
+          addResult.innerText = "Please enter both name and phone.";
+          return;
+      }
 
       fetch(SCRIPT_URL, {
         method: "POST",
@@ -211,10 +249,20 @@
       })
       .then(res => res.json())
       .then(data => {
-        document.getElementById("addResult").innerText = data.success || data.error;
+        if (data.success) {
+            addResult.style.color = "green";
+            addResult.innerText = data.success;
+        } else if (data.error) {
+            addResult.style.color = "red";
+            addResult.innerText = data.error;
+        }
         document.getElementById("newContactName").value = "";
         document.getElementById("newContactPhone").value = "";
-        login(); // Refresh
+        login(); // Refresh data after adding
+      })
+      .catch(error => {
+          addResult.style.color = "red";
+          addResult.innerText = "Error adding contact: " + error.message;
       });
     }
 
@@ -227,8 +275,15 @@
       })
       .then(res => res.json())
       .then(data => {
-        alert(data.success || data.error);
-        login(); // Refresh
+        if (data.success) {
+            alert(data.success);
+        } else if (data.error) {
+            alert(data.error);
+        }
+        login(); // Refresh data after deleting
+      })
+      .catch(error => {
+          alert("Error deleting contact: " + error.message);
       });
     }
 
