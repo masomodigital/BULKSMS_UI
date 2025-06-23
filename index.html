@@ -167,27 +167,47 @@
     </div>
   </div>
 
-  <script>
+<script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_fnlkXtBnHo33ZRBFX6Dqja_GlEqA0W2jefoOM8ctwM9thu62oYeTjkpYrkJHUw5x/exec";
     let currentID = "";
+
+    function showWait(message) {
+      let waitMsg = document.getElementById("waitMessage"); // ADDED
+      if (!waitMsg) {
+        waitMsg = document.createElement("div"); // ADDED
+        waitMsg.id = "waitMessage"; // ADDED
+        waitMsg.style.color = "green"; // ADDED
+        waitMsg.style.fontWeight = "bold"; // ADDED
+        waitMsg.style.textAlign = "center"; // ADDED
+        document.querySelector(".container").appendChild(waitMsg); // ADDED
+      }
+      waitMsg.textContent = message; // ADDED
+    }
+
+    function hideWait() {
+      const waitMsg = document.getElementById("waitMessage"); // ADDED
+      if (waitMsg) waitMsg.textContent = ""; // ADDED
+    }
 
     function login() {
       const nationalID = document.getElementById("nationalID").value.trim();
       const password = document.getElementById("userPassword").value.trim();
-      const loginError = document.getElementById("loginError"); // Ensure loginError is defined
-      loginError.innerText = ""; // Clear previous errors
+      const loginError = document.getElementById("loginError");
+      loginError.innerText = ""; 
 
       if (!nationalID || !password) {
         loginError.innerText = "Please enter both fields.";
         return;
       }
 
+      showWait("Wait please..."); // ADDED
       fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({ action: "login", nationalID, password })
       })
       .then(res => res.json())
       .then(data => {
+        hideWait(); // ADDED
         if (data.error) {
           loginError.innerText = data.error;
           return;
@@ -205,15 +225,15 @@
         updateContactList(data.contacts);
       })
       .catch(error => {
-          loginError.innerText = "Error during login: " + error.message;
+        hideWait();
+        loginError.innerText = "Error during login: " + error.message;
       });
     }
 
     function updateContactList(contacts) {
       const listDiv = document.getElementById("contactsList");
-      listDiv.innerHTML = "";
+      listDiv.innerHTML = ""; 
 
-      // Ensure contacts is an array before trying to iterate
       if (!Array.isArray(contacts)) {
         console.error("Expected contacts to be an array, but got:", contacts);
         document.getElementById("contactCount").innerText = 0;
@@ -229,27 +249,28 @@
         `;
         listDiv.appendChild(div);
       });
-
       document.getElementById("contactCount").innerText = contacts.length;
     }
 
     function addNewContact() {
       const name = document.getElementById("newContactName").value.trim();
       const phone = document.getElementById("newContactPhone").value.trim();
-      const addResult = document.getElementById("addResult"); // Get addResult element
-      addResult.innerText = ""; // Clear previous messages
+      const addResult = document.getElementById("addResult");
+      addResult.innerText = ""; 
 
       if (!name || !phone) {
-          addResult.innerText = "Please enter both name and phone.";
-          return;
+        addResult.innerText = "Please enter both name and phone.";
+        return;
       }
 
+      showWait("Wait please..."); // ADDED
       fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({ action: "addContact", nationalID: currentID, name, phone })
       })
       .then(res => res.json())
       .then(data => {
+        hideWait();
         if (data.success) {
             addResult.style.color = "green";
             addResult.innerText = data.success;
@@ -257,34 +278,38 @@
             addResult.style.color = "red";
             addResult.innerText = data.error;
         }
-        document.getElementById("newContactName").value = "";
-        document.getElementById("newContactPhone").value = "";
-        login(); // Refresh data after adding
+        document.getElementById("newContactName").value = ""; 
+        document.getElementById("newContactPhone").value = ""; 
+        login();
       })
       .catch(error => {
-          addResult.style.color = "red";
-          addResult.innerText = "Error adding contact: " + error.message;
+        hideWait();
+        addResult.style.color = "red";
+        addResult.innerText = "Error adding contact: " + error.message;
       });
     }
 
     function deleteContact(phone) {
       if (!confirm("Are you sure you want to delete this contact?")) return;
 
+      showWait("Wait please..."); // ADDED
       fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify({ action: "deleteContact", nationalID: currentID, phone })
       })
       .then(res => res.json())
       .then(data => {
+        hideWait();
         if (data.success) {
             alert(data.success);
         } else if (data.error) {
             alert(data.error);
         }
-        login(); // Refresh data after deleting
+        login();
       })
       .catch(error => {
-          alert("Error deleting contact: " + error.message);
+        hideWait();
+        alert("Error deleting contact: " + error.message);
       });
     }
 
@@ -292,6 +317,6 @@
       const pwdField = document.getElementById("userPasswordDisplay");
       pwdField.type = pwdField.type === "password" ? "text" : "password";
     }
-  </script>
+</script>
 </body>
 </html>
