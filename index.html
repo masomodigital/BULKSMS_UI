@@ -160,8 +160,17 @@
 
       <h4>Add New Contact - Safaricom ONLY</h4>
       <input type="text" id="newContactName" placeholder="Name" />
-      <input type="text" id="newContactPhone" placeholder="Phone Number" />
-      <button onclick="addNewContact()">Add Contact</button>
+      <input 
+    type="tel" 
+    id="newContactPhone" 
+    name="newContactPhone" 
+    required 
+    placeholder="07XXXXXXXX" 
+    pattern="^0\d{9}$" 
+    title="Enter a 10‑digit phone number starting with 0 (e.g., 0715399449)" 
+    oninput="this.value = this.value.replace(/\D/g, '')" 
+/>
+     <button onclick="addNewContact()">Add Contact</button>
       <button style="background-color: red; color: white;"onclick="window.location='https://masomodigital.github.io/PRIME-CONTACTS/'">Add Prime Contact</button>
       <p id="addResult"></p>
     </div>
