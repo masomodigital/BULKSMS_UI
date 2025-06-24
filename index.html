@@ -168,9 +168,9 @@
     placeholder="07XXXXXXXX" 
     pattern="^0\d{9}$" 
     title="Enter a 10‑digit phone number starting with 0 (e.g., 0715399449)" 
-    maxlength="10"
-    oninput="this.value = this.value.replace(/\D/g, '')" 
+    oninput="this.value = this.value.replace(/\D/g, '').slice(0,10)" 
 />
+
      <button onclick="addNewContact()">Add Contact</button>
       <button style="background-color: red; color: white;"onclick="window.location='https://masomodigital.github.io/PRIME-CONTACTS/'">Add Prime Contact</button>
       <p id="addResult"></p>
